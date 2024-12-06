@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Weather Archive</h2>
+
+    <!-- Filter Form -->
+    <form method="get" action="{% url 'archive' %}" class="row g-3 mb-4">
+        <div class="col-md-4">
+            <label for="city" class="form-label">City:</label>
+            <input type="text" name="city" id="city" class="form-control" placeholder="Enter city name" >
+        </div>
+        <div class="col-md-3">
+            <label for="start_date" class="form-label">Start Date:</label>
+            <input type="date" name="start_date" id="start_date" class="form-control" value="{{ start_date }}">
+        </div>
+        <div class="col-md-3">
+            <label for="end_date" class="form-label">End Date:</label>
+            <input type="date" name="end_date" id="end_date" class="form-control" value="{{ end_date }}">
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">Filter</button>
+        </div>
+    </form>
+
+    <!-- Archive Data -->
+    <div class="row">
+        {% for item in archive_data %}
+            <div class="col-md-4 mb-4">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.date }}</h5>
+                        <h5 class="card-title">{{ item.location.city_name }}</h5>
+                        <p class="card-text">
+                            Temperature: {{ item.min_temperature|floatformat:0 }}°C - {{ item.max_temperature|floatformat:0 }}°C<br>
+                            Humidity: {{ item.humidity }}%<br>
+                            Wind Speed: {{ item.wind_speed }} m/s
+                        </p>
+                        <div class="text-center">
+                            {%if item.weather_image%}
+                                <img src="{{ item.weather_image }}" alt="Weather icon" class="img-fluid" style="max-width: 50px;">
+                            {%else%}
+                                <img src="https://img.icons8.com/color-glass/42/000000/sun.png" alt="Weather icon" class="img-fluid" style="max-width: 50px;">
+                            {%endif%}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p class="text-center">No weather data found for this range.</p>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        {% if is_paginated %}
+            <nav>
+                <ul class="pagination">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.city %}city={{ request.GET.city }}&{% endif %}{% if request.GET.start_date %}start_date={{ request.GET.start_date }}&{% endif %}{% if request.GET.end_date %}end_date={{ request.GET.end_date }}&{% endif %}page={{ page_obj.previous_page_number }}">Previous</a>
+                        </li>
+                    {% endif %}
+
+                    <li class="page-item disabled">
+                        <span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+                    </li>
+
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% if request.GET.city %}city={{ request.GET.city }}&{% endif %}{% if request.GET.start_date %}start_date={{ request.GET.start_date }}&{% endif %}{% if request.GET.end_date %}end_date={{ request.GET.end_date }}&{% endif %}page={{ page_obj.next_page_number }}">Next</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

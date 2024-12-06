@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="container mt-4">
+    <h2>Welcome to your Account</h2>
+    <p><strong>Username:</strong> {{ user.username }}</p>
+    <p><strong>Email:</strong> {{ user.email }}</p>
+    <p><strong>Full Name:</strong> {{ user.first_name }} {{ user.last_name }}</p>
+    
+    <form method="POST" action="{% url 'logout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">Logout</button>
+    </form>
+</section>
+{% endblock %}
